@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>АИС Почтовое отделение — UI</title>
+  <style>
+    :root{
+      --bg:#fff;
+      --card:#f2f2f2;
+      --stroke:#e6e6e6;
+      --text:#111;
+      --muted:#6b6b6b;
+      --accent:#2b2b2b;
+      --radius-card:16px;
+      --radius-input:12px;
+      --radius-btn:28px;
+      --pad:16px;
+      --gap:12px;
+      --shadow:none;
+      font-synthesis-weight:none;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:#ddd;
+      color:var(--text);
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:24px;
+    }
+    /* телефон */
+    .phone{
+      width:393px; height:852px;
+      background:var(--bg);
+      border-radius:24px;
+      overflow:hidden;
+      box-shadow:0 12px 30px rgba(0,0,0,.15);
+      position:relative;
+    }
+    /* экраны */
+    .screen{display:none; height:100%;}
+    .screen.active{display:block;}
+    .content{
+      height:calc(100% - 76px);
+      padding:var(--pad);
+      display:flex;
+      flex-direction:column;
+      gap:var(--gap);
+      overflow:auto;
+    }
+
+    /* appbar */
+    .appbar{
+      height:56px;
+      padding:0 var(--pad);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--stroke);
+    }
+    .titleblock{display:flex; flex-direction:column; gap:2px;}
+    .titleblock .name{font-size:14px; font-weight:600;}
+    .titleblock .sub{font-size:12px; color:var(--muted);}
+    .iconbtn{
+      width:36px; height:36px;
+      border:1px solid var(--stroke);
+      background:#fff;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+    }
+
+    /* search */
+    .search{
+      height:44px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:0 12px;
+      border:1px solid var(--stroke);
+      border-radius:var(--radius-input);
+      background:#fff;
+    }
+    .search input{
+      border:none; outline:none;
+      flex:1;
+      font-size:14px;
+    }
+
+    /* cards list */
+    .list{display:flex; flex-direction:column; gap:12px;}
+    .card{
+      background:var(--card);
+      border-radius:var(--radius-card);
+      padding:14px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .thumb{
+      width:56px; height:56px;
+      border-radius:14px;
+      background:#bdbdbd;
+      flex:0 0 auto;
+    }
+    .cardtext{flex:1; min-width:0;}
+    .cardtext .h{font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .cardtext .p{font-size:12px; color:var(--muted); margin-top:4px; line-height:1.2;}
+    .badge{
+      width:16px; height:16px;
+      border-radius:4px;
+      background:#111;
+      flex:0 0 auto;
+    }
+
+    .btn{
+      height:52px;
+      border:none;
+      border-radius:var(--radius-btn);
+      background:var(--accent);
+      color:#fff;
+      font-size:16px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    .btn.secondary{
+      background:#fff;
+      border:1px solid var(--stroke);
+      color:var(--text);
+    }
+
+    /* формы */
+    .field{display:flex; flex-direction:column; gap:6px;}
+    .label{font-size:12px; color:var(--muted);}
+    .input{
+      height:44px;
+      border-radius:var(--radius-input);
+      border:1px solid var(--stroke);
+      padding:0 12px;
+      font-size:14px;
+      outline:none;
+    }
+    .section{
+      background:var(--card);
+      border-radius:var(--radius-card);
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    /* bottom nav */
+    .nav{
+      height:76px;
+      border-top:1px solid var(--stroke);
+      background:#fff;
+      display:flex;
+      justify-content:space-around;
+      align-items:center;
+      position:absolute;
+      left:0; right:0; bottom:0;
+    }
+    .nav button{
+      background:none;
+      border:none;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      align-items:center;
+      cursor:pointer;
+    }
+    .dot{
+      width:22px; height:22px;
+      border-radius:8px;
+      background:#cfcfcf;
+    }
+    .nav button.active{color:var(--text);}
+    .nav button.active .dot{background:#111;}
+    .spacer{flex:1;}
+
+    /* welcome */
+    .hero{
+      background:var(--card);
+      border-radius:var(--radius-card);
+      height:320px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(0,0,0,0.03);
+    }
+    .hero .mark{
+      width:92px; height:92px;
+      border-radius:24px;
+      background:#bdbdbd;
+      position:relative;
+    }
+    .hero .mark::after{
+      content:"✉";
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      font-size:42px;
+      color:#111;
+      opacity:.75;
+    }
+    .h1{font-size:22px; font-weight:700; margin:4px 0 0;}
+    .lead{font-size:14px; color:var(--muted); margin:0;}
+    .link{font-size:12px; color:var(--muted); text-align:center; cursor:pointer;}
+  </style>
+</head>
+<body>
+  <div class="phone">
+
+    <!-- 01 Welcome -->
+    <div class="screen active" id="s1">
+      <div class="content">
+        <div class="hero"><div class="mark"></div></div>
+        <div>
+          <div class="h1">АИС Почтовое отделение</div>
+          <p class="lead">Приём и выдача отправлений, поиск, учёт операций.</p>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn" onclick="go(2)">Войти</button>
+        <div class="link" onclick="go(3)">Продолжить без входа</div>
+      </div>
+      <div class="nav">
+        <button class="active" onclick="go(1)"><div class="dot"></div>Старт</button>
+        <button onclick="go(3)"><div class="dot"></div>Главная</button>
+        <button onclick="go(4)"><div class="dot"></div>Оформить</button>
+        <button onclick="go(5)"><div class="dot"></div>Профиль</button>
+      </div>
+    </div>
+
+    <!-- 02 Login -->
+    <div class="screen" id="s2">
+      <div class="appbar">
+        <div class="titleblock">
+          <div class="name">Вход</div>
+          <div class="sub">АИС Почтовое отделение</div>
+        </div>
+        <div class="iconbtn" onclick="go(1)">←</div>
+      </div>
+      <div class="content">
+        <div class="field">
+          <div class="label">Логин</div>
+          <input class="input" placeholder="Введите логин"/>
+        </div>
+        <div class="field">
+          <div class="label">Пароль</div>
+          <input class="input" placeholder="Введите пароль" type="password"/>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn" onclick="go(3)">Войти</button>
+        <div class="link">Забыли пароль?</div>
+      </div>
+      <div class="nav">
+        <button onclick="go(1)"><div class="dot"></div>Старт</button>
+        <button class="active" onclick="go(3)"><div class="dot"></div>Главная</button>
+        <button onclick="go(4)"><div class="dot"></div>Оформить</button>
+        <button onclick="go(5)"><div class="dot"></div>Профиль</button>
+      </div>
+    </div>
+
+    <!-- 03 Home -->
+    <div class="screen" id="s3">
+      <div class="appbar">
+        <div class="titleblock">
+          <div class="name">Имя Ф. • 258,85 ₽</div>
+          <div class="sub">Отделение № 102 • смена активна</div>
+        </div>
+        <div class="iconbtn">🎧</div>
+      </div>
+      <div class="content">
+        <div class="search">
+          <input placeholder="Найти отправление или письмо"/>
+          <span style="opacity:.7">📷</span>
+        </div>
+        <div class="list">
+          <div class="card">
+            <div class="thumb"></div>
+            <div class="cardtext">
+              <div class="h">Выдача • RR123456789RU</div>
+              <div class="p">Статус: прибыло • срок хранения 5 дней</div>
+            </div>
+            <div class="badge"></div>
+          </div>
+          <div class="card">
+            <div class="thumb"></div>
+            <div class="cardtext">
+              <div class="h">Приём • Посылка стандарт</div>
+              <div class="p">Отправитель: Иванов И.И. • 1.2 кг</div>
+            </div>
+            <div class="badge"></div>
+          </div>
+          <div class="card">
+            <div class="thumb"></div>
+            <div class="cardtext">
+              <div class="h">Письмо заказное • 11029…</div>
+              <div class="p">Адресат: Петрова А.С. • готово к выдаче</div>
+            </div>
+            <div class="badge"></div>
+          </div>
+          <div class="card">
+            <div class="thumb"></div>
+            <div class="cardtext">
+              <div class="h">Уведомление</div>
+              <div class="p">Истекает срок хранения по RR987…</div>
+            </div>
+            <div class="badge"></div>
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn" onclick="go(4)">Отправить</button>
+      </div>
+      <div class="nav">
+        <button onclick="go(1)"><div class="dot"></div>Старт</button>
+        <button class="active" onclick="go(3)"><div class="dot"></div>Главная</button>
+        <button onclick="go(4)"><div class="dot"></div>Оформить</button>
+        <button onclick="go(5)"><div class="dot"></div>Профиль</button>
+      </div>
+    </div>
+
+    <!-- 04 Create Shipment -->
+    <div class="screen" id="s4">
+      <div class="appbar">
+        <div class="titleblock">
+          <div class="name">Оформление</div>
+          <div class="sub">Создание отправления</div>
+        </div>
+        <div class="iconbtn" onclick="go(3)">←</div>
+      </div>
+      <div class="content">
+        <div class="section">
+          <div class="field">
+            <div class="label">Тип отправления</div>
+            <input class="input" placeholder="Посылка / письмо / EMS"/>
+          </div>
+          <div class="field">
+            <div class="label">Вес</div>
+            <input class="input" placeholder="Например, 1.2 кг"/>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="field">
+            <div class="label">Отправитель</div>
+            <input class="input" placeholder="ФИО, телефон"/>
+          </div>
+          <div class="field">
+            <div class="label">Адрес отправителя</div>
+            <input class="input" placeholder="Город, улица, дом"/>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="field">
+            <div class="label">Получатель</div>
+            <input class="input" placeholder="ФИО, телефон"/>
+          </div>
+          <div class="field">
+            <div class="label">Адрес получателя</div>
+            <input class="input" placeholder="Город, улица, дом"/>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+        <button class="btn">Создать отправление</button>
+      </div>
+      <div class="nav">
+        <button onclick="go(1)"><div class="dot"></div>Старт</button>
+        <button onclick="go(3)"><div class="dot"></div>Главная</button>
+        <button class="active" onclick="go(4)"><div class="dot"></div>Оформить</button>
+        <button onclick="go(5)"><div class="dot"></div>Профиль</button>
+      </div>
+    </div>
+
+    <!-- 05 Profile -->
+    <div class="screen" id="s5">
+      <div class="appbar">
+        <div class="titleblock">
+          <div class="name">Профиль</div>
+          <div class="sub">Оператор отделения</div>
+        </div>
+        <div class="iconbtn" onclick="go(3)">×</div>
+      </div>
+      <div class="content">
+        <div class="section" style="align-items:center; text-align:center;">
+          <div class="thumb" style="width:72px;height:72px;border-radius:24px;"></div>
+          <div style="font-weight:700;">Оператор: Имя Ф.</div>
+          <div style="font-size:12px;color:var(--muted);">Отделение № 102 • онлайн</div>
+        </div>
+
+        <div class="section">
+          <div class="card" style="background:#fff;border:1px solid var(--stroke);">
+            <div class="thumb" style="width:40px;height:40px;border-radius:12px;"></div>
+            <div class="cardtext">
+              <div class="h">Моё отделение</div>
+              <div class="p">Адрес, часы работы</div>
+            </div>
+          </div>
+          <div class="card" style="background:#fff;border:1px solid var(--stroke);">
+            <div class="thumb" style="width:40px;height:40px;border-radius:12px;"></div>
+            <div class="cardtext">
+              <div class="h">История операций</div>
+              <div class="p">Выдача, приём, возвраты</div>
+            </div>
+          </div>
+          <div class="card" style="background:#fff;border:1px solid var(--stroke);">
+            <div class="thumb" style="width:40px;height:40px;border-radius:12px;"></div>
+            <div class="cardtext">
+              <div class="h">Справка</div>
+              <div class="p">Инструкции и поддержка</div>
+            </div>
+          </div>
+          <button class="btn secondary">Выйти</button>
+        </div>
+      </div>
+      <div class="nav">
+        <button onclick="go(1)"><div class="dot"></div>Старт</button>
+        <button onclick="go(3)"><div class="dot"></div>Главная</button>
+        <button onclick="go(4)"><div class="dot"></div>Оформить</button>
+        <button class="active" onclick="go(5)"><div class="dot"></div>Профиль</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function go(n){
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      document.getElementById('s'+n).classList.add('active');
+    }
+  </script>
+</body>
+</html>
